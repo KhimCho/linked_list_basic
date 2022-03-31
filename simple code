@@ -1,0 +1,233 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+struct node
+{
+	int data = 0;
+	node * next = NULL;
+	node(int _d) :data(_d) {};
+};
+
+struct list
+{
+	node * head;
+	node * tail;
+	list()
+	{
+		head = NULL;
+		tail = NULL;
+	}
+	bool is_empty()
+	{
+		return (head == NULL);
+	}
+	void add_head(int);
+	void add_tail(int);
+	void print_node();
+	int count_node();
+	int find_x(int obj);
+	void delete_head();
+	void delete_tail();
+	void list_sort();
+	void add_node_sorted(int);
+};
+void list::add_head(int num)
+{
+	node * obj = new node(num);
+	if (head == NULL)
+	{
+		head = obj;
+		tail = obj;
+	}
+	else
+	{
+		obj->next = head;
+		head = obj;
+	}
+}
+void list::add_tail(int num)
+{
+	node * obj = new node(num);
+	if (head == NULL)
+	{
+		head = obj;
+		tail = obj;
+	}
+	else
+	{
+		tail->next = obj;
+		tail = obj;
+	}
+}
+void list::print_node()
+{
+	node * ptr = head;
+	while (ptr != NULL)
+	{
+		cout << ptr->data << ' ';
+		ptr = ptr->next;
+	}
+	cout << endl;
+}
+
+int list::count_node()
+{
+	int res = 0;
+	node * ptr = head;
+	while (ptr != NULL)
+	{
+		res++;
+		ptr = ptr->next;
+	}
+	return res;
+}
+int list::find_x(int obj)
+{
+	int pos = 0;
+	node * ptr = head;
+	while (ptr != NULL)
+		if (ptr->data == obj)
+			return pos;
+		else
+		{
+			pos++;
+			ptr = ptr->next;
+		}
+	return - 1;
+}
+void list::delete_head()
+{
+	if (!(is_empty()))
+	{
+		node * del = head;
+		head = head->next;
+		delete del;
+	}
+}
+
+void list::delete_tail()
+{
+	if (!(is_empty()))
+	{
+		node * ptr = head;
+		while (ptr != NULL)
+			if (ptr->next == tail)
+			{
+				tail = ptr;
+				delete tail->next;
+				tail->next = NULL;
+				break;
+			}
+			else
+				ptr = ptr->next;
+	}
+}
+node * mergelist(node * l1, node *l2)
+{
+	node *ptr = new node(0);
+	node *curr = ptr;
+
+	while (l1 != NULL && l2 != NULL)
+	{
+		if (l1->data <= l2->data)
+		{
+			curr->next = l1;
+			l1 = l1->next;
+		}
+		else
+		{
+			curr->next = l2;
+			l2 = l2->next;
+		}
+
+		curr = curr->next;
+
+	}
+	if (l1 != NULL)
+	{
+		curr->next = l1;
+		l1 = l1->next;
+	}
+	if (l2 != NULL)
+	{
+		curr->next = l2;
+		l2 = l2->next;
+	}
+	return ptr->next;
+}
+
+
+node* sortList(node* head) {
+	if (head == NULL || head->next == NULL)
+		return head;
+	node *temp = NULL;
+	node *slow = head;
+	node *fast = head;
+	while (fast != NULL && fast->next != NULL)
+	{
+		temp = slow;
+		slow = slow->next;        
+		fast = fast->next->next;  
+
+	}
+	temp->next = NULL;            
+	node * l1 = sortList(head);    
+	node * l2 = sortList(slow);    
+
+	return mergelist(l1, l2);     
+}
+
+
+
+void list::list_sort()
+{
+	head = sortList(head);
+}
+void list::add_node_sorted(int num)
+{
+	node * obj = new node(num);
+	if (head == NULL)
+	{
+		head = obj;
+		tail = obj;
+	}
+	else
+	{
+		node * ptr = head;
+		if (ptr->data >= num)
+		{
+			obj->next = ptr;
+			head = obj;
+		}
+		else
+		while (ptr != NULL)
+			if (ptr->next->data >= num)
+			{
+				obj->next = ptr->next;
+				ptr->next = obj;
+				break;
+			}
+			else
+				ptr = ptr->next;
+
+	}
+}
+
+
+
+int main()
+{
+
+		
+	list numList;
+	numList.add_head(10);
+	numList.add_tail(20);
+	numList.add_head(30);
+	numList.print_node();
+	cout << numList.count_node();
+	cout << numList.find_x(10);
+	numList.list_sort();
+	numList.print_node();
+
+}
